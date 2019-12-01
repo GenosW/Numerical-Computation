@@ -25,14 +25,19 @@ def plotError_semilogy(fig, ax, X, Y, exact=0, filepath="/Users/peterholzner/Cod
 def newton(x, f, df):
     return x - f(x)/df(x)
 
-def iterateNewton(x0, f, df, maxIteration, eps):
+def iterateNewton(x0, f, df, maxIteration, eps, bound=1000, debug=0):
     x = newton(x0,f,df)
     xList = [x0,x]
     iterations = 0
     for i in list(range(0,maxIteration)):
+        if debug: print("Iteration: ", i+1,"\nx= ", x)
         x = newton(x,f,df)
         xList.append(x)
         if (abs(f(x)) < eps):
+            iterations = i+1
+            break
+        if (abs(x-x0) >= bound):
+            print("Out of bound! Terminating Newton-Raphson method.")
             iterations = i+1
             break
     return xList, iterations
@@ -59,6 +64,9 @@ def df3(x):
 def f4(x):
     return 1/x - 1
 
+def df4(x):
+    return -1/np.power(x,2)
+
 if __name__ == "__main__":
     eps = 1e-16
     x0 = 0.5
@@ -82,14 +90,25 @@ if __name__ == "__main__":
     print("x_root = ", xList3[-1])
     print("found after ",iterations3," iterations")
     print("with an accuracy of", abs(xExact3 - xList3[-1]))
+    print("f4")
+    xExact4 = 1
+    xList4, iterations4 = iterateNewton(x02, f4, df4, 50, eps, bound=10)
+    print("x_root = ", xList4[-1])
+    print("found after ",iterations4," iterations")
+    print("with an accuracy of", abs(xExact4 - xList4[-1]))
+    print(xList4)
 
     fig, ax = plt.subplots()
     # plotError_semilogy(fig, ax, list(range(0,iterations1+2)), xList1, xExact1, save=1)
-    ax.semilogy(list(range(0,iterations1+2)), np.array(xList1) - xExact1)
-    ax.semilogy(list(range(0,iterations2+2)), np.array(xList2) - xExact2)
-    ax.semilogy(list(range(0,iterations3+2)), np.array(xList3) - xExact3)
+    ax.semilogy(list(range(0,iterations1+2)), np.abs(np.array(xList1) - xExact1), '-x', label="x²")
+    ax.semilogy(list(range(0,iterations2+2)), np.abs(np.array(xList2) - xExact2), '-x', label="e^x -1")
+    ax.semilogy(list(range(0,iterations3+2)), np.abs(np.array(xList3) - xExact3), '-x', label="|x|^3/2")
+    ax.semilogy(list(range(0,iterations4+2)),np.abs( np.array(xList4) - xExact4), '-x', label="x^-1 - 1")
     # ax.semilogy(list(range(0,max(iterations1,iterations2,iterations3)+2)), )
     ax.grid()
-    plt.show()
-        
-        
+    ax.legend()
+    ax.set(title="Yo", xlabel="iterations", ylabel="error of x_root")
+    # plt.show()
+    scriptpath = os.path.dirname(__file__)
+    # print(os.path.join(scriptpath,"Ex9_2.png")
+    fig.savefig(os.path.join(scriptpath,"Ex9_2.png"))    
