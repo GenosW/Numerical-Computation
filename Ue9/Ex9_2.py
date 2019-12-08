@@ -109,6 +109,7 @@ if __name__ == "__main__":
     ax.legend()
     ax.set(title="Yo", xlabel="iterations", ylabel="error of x_root")
     # plt.show()
-    scriptpath = os.path.dirname(__file__)
+    
     # print(os.path.join(scriptpath,"Ex9_2.png")
+    scriptpath = os.path.dirname(__file__)
     fig.savefig(os.path.join(scriptpath,"Ex9_2.png"))    
