@@ -4,26 +4,6 @@ import os
 import scipy
 # import random
 
-def newton1D(x, f, df):
-    return x - f(x)/df(x)
-
-def iterateNewton1D(x0, f, df, maxIteration, eps, bound=1000, debug=0):
-    x = newton1D(x0,f,df)
-    xList = [x0,x]
-    iterations = 0
-    for i in list(range(0,maxIteration)):
-        if debug: print("Iteration: ", i+1,"\nx= ", x)
-        x = newton1D(x,f,df)
-        xList.append(x)
-        if (abs(f(x)) < eps):
-            iterations = i+1
-            break
-        if (abs(x-x0) >= bound):
-            print("Out of bound! Terminating Newton-Raphson method.")
-            iterations = i+1
-            break
-    return xList, iterations
-
 def f(x):
     assert(isinstance(x,np.matrix))
     ret = np.matrix([[(x[0]-x[1])**2],[0]], dtype=float)
