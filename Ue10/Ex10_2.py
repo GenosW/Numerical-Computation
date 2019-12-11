@@ -83,9 +83,8 @@ if __name__ == "__main__":
     print("final error:\n",np.linalg.norm(f(x)))
     x2 = np.power(1e-2,np.arange(0,iterations+1))
     plt.semilogy(np.arange(0,iterations+1),error,"rx-")
-    plt.semilogy(np.arange(0,iterations+1),x2,"b-")
+    #plt.semilogy(np.arange(0,iterations+1),x2,"b-")
     plt.grid()
-    plt.show()
     scriptpath = os.path.dirname(__file__)
     plt.savefig(os.path.join(scriptpath,"Ex10_2.png")) 
     

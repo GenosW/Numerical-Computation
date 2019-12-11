@@ -55,14 +55,15 @@ def g(x):
 
 def dg(x):
     diff = x[0]-x[1]
-    return np.array( [[2*(1-0.01*diff), 2*(1+0.01*diff)],\
-                    [1, 2]], dtype = float)
+    return np.array( [[2*(1-0.01*diff), 1+0.02*diff],\
+                        [1, 2]], dtype = float)
 
 def netwonXD(xn,f,df):
     if np.linalg.det(df(xn)):
         res = f(xn)
         corr = np.linalg.solve(df(xn),res)
-        return xn - corr, res
+        xNew = xn - corr
+        return xNew, f(xNew)
     else:
         print("df is noninvertible->cant be solved...returning input point x_n!")
         return xn, 0*xn
@@ -79,6 +80,8 @@ if __name__ == "__main__":
     print(eq.close(1e-16))
     print(np.linalg.norm(np.dot(A,xFin) - eq.rhs(xFin)))
     eq.calcErrors()
+    print("Errors: ")
+    print(eq.estErrors)
     ##########################
     print("-"*30)
     print("Now Newton: ")
@@ -94,21 +97,18 @@ if __name__ == "__main__":
         xn1, res = netwonXD(x,g,dg)
         error.append(np.linalg.norm(res))
         if np.linalg.norm(res) < eps or np.allclose(x,xn1,rtol=eps):
-            # print("x:\n",x)
-            # print("xn1:\n",xn1)
             print("Break condition: <xn, xnp1 close>")
             iterations = i+1
-            np.copyto(x, xn1)
+            np.copyto(x,xn1)
             break
         np.copyto(x, xn1)
     print("Arrived at solution after ",iterations," iterations.")
     print("final:\n",x)
     print("final error:\n",np.linalg.norm(np.dot(A,x) - g(x)))
-    x2 = np.power(1e-2,np.arange(0,iterations+1))
+    #x2 = np.power(1e-2,np.arange(0,iterations+1))
     plt.semilogy(np.arange(0,iterations+1),error,"bx-",label="Newton")
     plt.semilogy(np.arange(0,len(eq.errors)),eq.errors,"go-",label="Simple_actual error")
     plt.semilogy(np.arange(0,len(eq.estErrors)),eq.estErrors,"rx--",label="Simple_estimated error")
-    print(eq.estErrors)
     # plt.semilogy(np.arange(0,iterations+1),x2,"b-", label="order x^2 ???")
     plt.grid()
     plt.legend()
