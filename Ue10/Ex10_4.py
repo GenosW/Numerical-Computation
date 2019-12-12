@@ -23,25 +23,25 @@ def df(u,n,h):
     return ret
 
 if __name__ == "__main__":
-    n = 10
-    # n = int(input("n = "))
+    # n = 10
+    n = int(input("n = "))
     print("n = ",n," selected!")
-    h = n-1
+    h = 1/n-1
     A = 1/h**2 * (2*np.eye(n,n,dtype=float) - np.eye(n,n,k=1,dtype=float) - np.eye(n,n,k=1,dtype=float))
     b = np.zeros(n,dtype=float)
     ########
     print("-"*30)
     print("Now Newton: ")
     #x = np.linalg.solve(A,b)
-    x = np.ones(n,dtype=float)
-    #print("Starting guess x0: ",x)
+    x = np.zeros(n,dtype=float)
+    print("Starting guess x0: ",x)
     print("norm(g(x0)): ",np.linalg.norm(f(x,n,h,A)))
     print("-"*30)
     print("Iterating...please hold the line!")
     eps = 1e-15
     error = []
-    iterations = 100
-    for i in list(range(0,100)):
+    iterations = 1000
+    for i in list(range(0,iterations)):
         xn1 = netwonXD(A,x,f,df,n,h)
         error.append(np.linalg.norm(xn1 - x))
         if error[-1] < eps:# or np.allclose(x,xn1,rtol=eps):
@@ -53,7 +53,8 @@ if __name__ == "__main__":
     close = np.allclose(f(x,n,h,A),b,rtol=eps)
     print("Is it closed? ",close)
     print("Iterations: ", iterations)
-    print(error)
+    print("final form of x: ",x)
+    # print(error)
     plt.semilogy(np.arange(0,iterations,step=1),error,"bx-",label="Newton")
     plt.grid()
     plt.legend()
