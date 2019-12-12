@@ -26,7 +26,7 @@ if __name__ == "__main__":
     # n = 10
     n = int(input("n = "))
     print("n = ",n," selected!")
-    h = 1/n-1
+    h = 1/(n-1)
     A = 1/h**2 * (2*np.eye(n,n,dtype=float) - np.eye(n,n,k=1,dtype=float) - np.eye(n,n,k=-1,dtype=float))
     b = np.zeros(n,dtype=float)
     ########
@@ -40,12 +40,12 @@ if __name__ == "__main__":
     print("Iterating...please hold the line!")
     eps = 1e-15
     error = []
-    iterations = 1000
+    iterations = 100
     for i in list(range(0,iterations)):
         xn1 = netwonXD(A,x,f,df,n,h)
         error.append(np.linalg.norm(xn1 - x))
         if error[-1] < eps:# or np.allclose(x,xn1,rtol=eps):
-            print("Break condition: <xn, xnp1 close>")
+            # print("Break condition: <xn, xnp1 close>")
             iterations = i+1
             np.copyto(x,xn1)
             break
