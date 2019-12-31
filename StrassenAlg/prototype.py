@@ -10,6 +10,18 @@ A =   ( a11 a12)      B = (b11 b12)       C = (c11 c12)
 Then the standard multiplication C = A B can be written as follows:
 C = (c11 c12) = (a11*b11 + a12*b21      a11*b21 + a12*b22)
     (c21 c22)   (a21*b11 + a22*b21      a21*b21 + a22*b22)
+
+M1 = (A11 + A22) (B11 + B22)
+M2 = (A21 + A22) B11
+M3 = A11 (B12 − B22)
+M4 = A22 (B21 − B11)
+M5 = (A11 + A12) B22
+M6 = (A21 − A11) (B11 + B12)
+M7 = (A12 − A22) (B21 + B22)
+C11 = M1 + M4 − M5 + M7
+C12 = M3 + M5
+C21 = M2 + M4
+C22 = M1 − M2 + M3 + M6
 '''
 
 import numpy as np 
@@ -30,18 +42,80 @@ def matMult(A,B,n):
 def strassen(n,A,B,C,W):
     if n == 1:
         C[0,0] = A*B
-        print(C)
+        #print(C)
         return 0
     n = int(n)
     h = int(n/2)
-    print(h,n)
-    W[0:h,0:h] = A[0:h,0:h] + A[h:n,h:n]
-    print(W[0:h,0:h])
-    W[0:h,h:n] = B[0:h,0:h] + B[h:n,h:n]
-    print(W[0:h,h:n])
-    M1 = np.empty((h,h))
-    M1 = strassen(n/2,W[0:h,0:h],W[0:h,h:n],W[h:n,0:h],W[h:n,h:n])
-    return W[h:n,0:h]
+    # print('(n,h) = ({},{})'.format(n,h))
+    # Partition... for better readability
+    # A
+    A11 = A[0:h,0:h]
+    A12 = A[0:h,h:n]
+    A21 = A[h:n,0:h]
+    A22 = A[h:n,h:n]
+    # B
+    B11 = B[0:h,0:h]
+    B12 = B[0:h,h:n]
+    B21 = B[h:n,0:h]
+    B22 = B[h:n,h:n]
+    #C
+    C11 = C[0:h,0:h]
+    C12 = C[0:h,h:n]
+    C21 = C[h:n,0:h]
+    C22 = C[h:n,h:n]
+    # W
+    W11 = W[0:h,0:h]
+    W12 = W[0:h,h:n]
+    W21 = W[h:n,0:h]
+    W22 = W[h:n,h:n]
+    ## Compute
+    # M1 = (A11 + A22) (B11 + B22)
+    W11 = A11 + A22
+    W12 = B11 + B22
+    strassen(h,W11,W12,W22,W21)
+    np.copyto(C11,W22)
+    np.copyto(C22,W22)
+    #C11 = W22
+    #C22 = W22
+    # M2 = (A21 + A22) B11
+    W11 = A21 + A22
+    W12 = B11
+    strassen(h,W11,W12,W22,W21)
+    np.copyto(C21,W22)
+    C22 -= W22
+    
+    # M3 = A11 (B12 − B22)
+    W11 = A11
+    W12 = (B12 - B22)
+    strassen(h,W11,W12,W22,W21)
+    np.copyto(C12,W22)
+    # C12 = W22
+    C22 += W22
+    # M4 = A22 (B21 − B11)
+    W11 = A22
+    W12 = (B21 - B11)
+    strassen(h,W11,W12,W22,W21)
+    C11 += W22
+    C21 += W22
+    # M5 = (A11 + A12) B22
+    W11 = (A11 + A12)
+    W12 = B22
+    strassen(h,W11,W12,W22,W21)
+    C11 -= W22
+    C12 += W22
+    # M6 = (A21 − A11) (B11 + B12)
+    W11 = (A21 - A11)
+    W12 = (B11 + B12)
+    strassen(h,W11,W12,W22,W21)
+    C22 += W22
+    # M7 = (A12 − A22) (B21 + B22)
+    W11 = (A12 - A22)
+    W12 = (B21 + B22)
+    strassen(h,W11,W12,W22,W21)
+    C11 += W22
+    # print("M7 done -> C:\n",C)
+    # if True: return 0
+    return 0
 
 # def matMultT(A,B,n):
 #     C = np.empty_like(A)
@@ -56,10 +130,10 @@ def strassen(n,A,B,C,W):
 #     return C
 
 if __name__ == "__main__":
-    n = 4
+    n = 8
     A = np.ones((n,n))
     B = np.ones((n,n)) * 3
-    C = np.empty((n,n))
+    C = -10*np.ones((n,n))
     W = np.empty((n,n))
 
     start = time.time()
@@ -71,15 +145,15 @@ if __name__ == "__main__":
     # stop2 = time.time()
     # print("Cref:\n",Cref)
     print("Time REF: ",stopRef - start,"\n","_"*30)
-    # print("C1:\n",C1)
-    print("matMult close? ",np.allclose(Cref,C1))
-    print("Time matMult: ",stop1 - stopRef,"\n","_"*30)
-
-
+    print("Cref:\n",Cref)
     print("_"*30)
-    print("")
+    print("Time matMult: ",stop1 - stopRef)
+    print("C1:\n",C1)
+    print("matMult close? ",np.allclose(Cref,C1))
+    print("_"*30)
     print("Strassen test:")
-    print("M1: ",strassen(n,A,B,C,W))
+    print("Strassen: ",strassen(n,A,B,C,W))
+    print("C:\n",C)
     # print("C2:\n",C2)
     # print("matMultT close? ",np.allclose(Cref,C2))
     # print("Time matMultT: ",stop2 - stop1,"\n","_"*30)
