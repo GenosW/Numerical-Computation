@@ -35,8 +35,24 @@ int StdMatMult(uint n, uint m, vector<double>& A, vector<double>& B, vector<doub
 	return 0;
 }
 
+int AddMat(uint n, uint m, vector<double>& A, vector<double>& B, vector<double>& C){
+    if (checkDimensions(A,n,m) + checkDimensions(B,n,m) + checkDimensions(C,n,m) != 0) return 1;
+    for (uint i = 0; i < n; i++)
+        {
+            for (uint j = 0; j < m; j++)
+            {
+                C[i*n + j] = A[i*n + j] * B[i*n + j];
+            }
+    }
+    return 0;
+}
+
 int Strassen(uint n, uint m, vector<double>& A, vector<double>& B, vector<double>& C, vector<double>& W){
-    if (checkDimensions(A,n,n) + checkDimensions(B,n,n) + checkDimensions(C,n,n) != 0) return 1;
+    if (checkDimensions(A,n,m) + checkDimensions(B,n,m) + checkDimensions(C,n,m) != 0) return 1;
+    if (n ==1) StdMatMult(n,n,A,B,C);
+
+    int h = n/2;
+    W
 }
 
 int main(void)
