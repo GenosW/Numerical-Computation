@@ -58,7 +58,7 @@ def dg(x):
     return np.array( [[2*(1-0.01*diff), 1+0.02*diff],\
                         [1, 2]], dtype = float)
 
-def netwonXD(xn,f,df):
+def newtonXD(xn,f,df):
     if np.linalg.det(df(xn)):
         res = f(xn)
         corr = np.linalg.solve(df(xn),res)
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     error = [np.linalg.norm(g(x))]
     iterations = 100
     for i in list(range(0,100)):
-        xn1, res = netwonXD(x,g,dg)
+        xn1, res = newtonXD(x,g,dg)
         error.append(np.linalg.norm(res))
         if np.linalg.norm(res) < eps or np.allclose(x,xn1,rtol=eps):
             print("Break condition: <xn, xnp1 close>")
