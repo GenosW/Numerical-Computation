@@ -130,7 +130,8 @@ def strassen(n,A,B,C,W):
 #     return C
 
 if __name__ == "__main__":
-    n = 8
+    n = 2**8
+    print('n= ',n)
     A = np.ones((n,n))
     B = np.ones((n,n)) * 3
     C = -10*np.ones((n,n))
@@ -141,19 +142,24 @@ if __name__ == "__main__":
     stopRef = time.time()
     C1 = matMult(A,B,n)
     stop1 = time.time()
+    startStr = time.time()
+    ret = strassen(n,A,B,C,W)
+    stopStr = time.time()
     # C2 = matMultT(A,B,n)
     # stop2 = time.time()
     # print("Cref:\n",Cref)
-    print("Time REF: ",stopRef - start,"\n","_"*30)
-    print("Cref:\n",Cref)
+    print("Time numpy: ",stopRef - start)
+    #print("Cref:\n",Cref)
     print("_"*30)
     print("Time matMult: ",stop1 - stopRef)
-    print("C1:\n",C1)
+    #print("C1:\n",C1)
     print("matMult close? ",np.allclose(Cref,C1))
     print("_"*30)
     print("Strassen test:")
-    print("Strassen: ",strassen(n,A,B,C,W))
-    print("C:\n",C)
+    print("Strassen: ",ret)
+    print("Time Strassen: ",stopStr - startStr)
+    #print("C:\n",C)
+    print("Strassen close? ",np.allclose(Cref,C))
     # print("C2:\n",C2)
     # print("matMultT close? ",np.allclose(Cref,C2))
     # print("Time matMultT: ",stop2 - stop1,"\n","_"*30)
