@@ -63,7 +63,8 @@ if __name__ == "__main__":
     plt.grid()
     plt.legend()
     # plt.show()
+    
     scriptpath = os.path.dirname(__file__)
-    plt.savefig(os.path.join(scriptpath,"Ex10_3.png"))
+    plt.savefig(os.path.join(scriptpath,"Ex11_1.png"))
 
     
