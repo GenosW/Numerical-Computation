@@ -36,7 +36,7 @@ for q,ax in zip([0.8,0.5,0.3,0.1],axes):
         A = 1/h**2 * (2*np.eye(n,n,dtype=float) - np.eye(n,n,k=1,dtype=float) - np.eye(n,n,k=-1,dtype=float))
         EWs, EVs = np.linalg.eig(A)
         x = np.ones(n)
-        maxSteps = 100
+        maxSteps = 1000
         #q = 0.8
         sigma = 1e-13
         lambdas = [R(x,A)]
