@@ -110,12 +110,16 @@ int StdSubMatMult(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMi
 
 int Strassen(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMin, vector<double>& B, uint ibMin, uint jbMin, vector<double>& C, uint icMin, uint jcMin, vector<double>& W, uint iWMin, uint jWMin){
     if (checkDimensions(A,n,n) + checkDimensions(B,n,n) + checkDimensions(C,n,n) != 0) return 1;
-    if (n == 4) StdSubMatMult(rowSize,n,A,iaMin,jaMin,B,ibMin,jbMin,C,icMin,jcMin);
+    if (n == 4) {
+        StdSubMatMult(rowSize,n,A,iaMin,jaMin,B,ibMin,jbMin,C,icMin,jcMin);
+        return 3;
+    }
 
     uint h = n/2;
     // Go over all indices again... need to consider the offset when nesting
     // should end up looking like the first AddMat()-line for A11+A22
     // M1 = (A11 + A22) (B11 + B22)
+    // A + B = C
     AddMat(rowSize,A,iaMin+0,jaMin+0,A,iaMin+h,jaMin+h,W,iWMin+0,jWMin+0,h,h);          // A11+A22 -> W11
     AddMat(rowSize,B,ibMin+0,jbMin+0,B,ibMin+h,jbMin+h,W,iWMin+0,jWMin+h,h,h);          // B11 + B22 -> W12
     Strassen(rowSize,h,W,iWMin+0,jWMin+0,W,iWMin+0,jWMin+h,C,icMin+0,jcMin+0,W,iWMin+h,jWMin+0);    // C11 = M1 = W11 * W12
