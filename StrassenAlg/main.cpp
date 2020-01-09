@@ -87,52 +87,73 @@ int StdMatMult(uint n, uint m, vector<double>& A, vector<double>& B, vector<doub
 	return 0;
 }
 
+int StdSubMatMult(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMin, vector<double>& B, uint ibMin, uint jbMin, vector<double>& C, uint icMin, uint jcMin){
+    //if (checkDimensions(A,n,m) + checkDimensions(B,n,m) + checkDimensions(C,n,m) != 0) return 1;
+    for (uint i = 0; i < n; i++)
+        {
+            for (uint k = 0; k < n; k++)
+            {
+                double sum = 0;
+                for (uint j = 0; j < n; j++)
+                {
+                    sum += A.at((i+iaMin)*rowSize + (j+jaMin)) * B.at((j+ibMin)*rowSize + (k+jbMin));
+                    // cout << "k= " << j << "-> A[k]= " << A.at((i+iaMin)*rowSize + (j+jaMin)) << endl;
+                    // cout << "k= " << j << "-> B[k]= " << B.at((j+ibMin)*rowSize + (k+jbMin)) << endl;
+                }
+                // cout << "(i,j) = (" << i << "," << k << ")" << endl;
+                // cout << "sum = " << sum << endl;
+                C[(i+icMin)*rowSize + (k+jcMin)] = sum;
+            }
+        }
+	return 0;
+}
+
 int Strassen(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMin, vector<double>& B, uint ibMin, uint jbMin, vector<double>& C, uint icMin, uint jcMin, vector<double>& W, uint iWMin, uint jWMin){
     if (checkDimensions(A,n,n) + checkDimensions(B,n,n) + checkDimensions(C,n,n) != 0) return 1;
-    if (n ==2) StdMatMult(n,n,A,B,C);
+    if (n == 4) StdSubMatMult(rowSize,n,A,iaMin,jaMin,B,ibMin,jbMin,C,icMin,jcMin);
 
     uint h = n/2;
     // Go over all indices again... need to consider the offset when nesting
     // should end up looking like the first AddMat()-line for A11+A22
     // M1 = (A11 + A22) (B11 + B22)
     AddMat(rowSize,A,iaMin+0,jaMin+0,A,iaMin+h,jaMin+h,W,iWMin+0,jWMin+0,h,h);          // A11+A22 -> W11
-    AddMat(rowSize,B,0,0,B,h,h,W,0,h,h,h);          // B11 + B22 -> W12
-    Strassen(rowSize,h,W,0,0,W,0,h,C,0,0,W,h,0);    // C11 = M1 = W11 * W12
-    SetMat(rowSize,C,0,0,C,h,h,h,h);                // C22 = M1 = C11
+    AddMat(rowSize,B,ibMin+0,jbMin+0,B,ibMin+h,jbMin+h,W,iWMin+0,jWMin+h,h,h);          // B11 + B22 -> W12
+    Strassen(rowSize,h,W,iWMin+0,jWMin+0,W,iWMin+0,jWMin+h,C,icMin+0,jcMin+0,W,iWMin+h,jWMin+0);    // C11 = M1 = W11 * W12
+    SetMat(rowSize,C,icMin+0,jcMin+0,C,icMin+h,jcMin+h,h,h);                // C22 = M1 = C11
 
     // M2 = (A21 + A22) B11
-    AddMat(rowSize,A,h,0,A,h,h,W,0,0,h,h);          // A21+A22 -> W11
-    Strassen(rowSize,h,W,0,0,B,0,0,C,h,0,W,h,0);    // C21 = M2 = W11 * B11
-    SubMat(rowSize,C,h,h,C,h,0,C,h,h,h,h);          // C22 -= M2 -= C21
+    AddMat(rowSize,A,iaMin+h,jaMin+0,A,iaMin+h,jaMin+h,W,iWMin+0,jWMin+0,h,h);          // A21+A22 -> W11
+    Strassen(rowSize,h,W,iWMin+0,jWMin+0,B,ibMin+0,jbMin+0,C,icMin+h,jcMin+0,W,iWMin+h,jWMin+0);    // C21 = M2 = W11 * B11
+    SubMat(rowSize,C,icMin+h,jcMin+h,C,icMin+h,jcMin+0,C,icMin+h,jcMin+h,h,h);          // C22 -= M2 -= C21
 
     // M3 = A11 (B12 − B22)
-    SubMat(rowSize,B,0,h,B,h,h,W,0,0,h,h);          // B12 - B22 -> W11
-    Strassen(rowSize,h,A,0,0,W,0,0,C,0,h,W,h,0);    // C12 = M3 = A11 * W11
-    AddMat(rowSize,C,h,h,C,0,h,C,h,h,h,h);          // C22 += M3 += C12
+    SubMat(rowSize,B,ibMin+0,jbMin+h,B,ibMin+h,jbMin+h,W,iWMin+0,jWMin+0,h,h);          // B12 - B22 -> W11
+    Strassen(rowSize,h,A,iaMin+0,jaMin+0,W,iWMin+0,jWMin+0,C,icMin+0,jcMin+h,W,iWMin+h,jWMin+0);    // C12 = M3 = A11 * W11
+    AddMat(rowSize,C,icMin+h,jcMin+h,C,icMin+0,jcMin+h,C,icMin+h,jcMin+h,h,h);          // C22 += M3 += C12
 
     // M4 = A22 (B21 − B11)
-    SubMat(rowSize,B,h,0,B,0,0,W,0,0,h,h);          // B21 - B11 -> W11
-    Strassen(rowSize,h,A,h,h,W,0,0,W,h,h,W,h,0);    // M4 = A22*W11 -> W22
-    AddMat(rowSize,C,0,0,W,h,h,C,0,0,h,h);          // C11 += M4 += W22
-    AddMat(rowSize,C,h,0,W,h,h,C,h,0,h,h);          // C21 += M4 += W22
+    SubMat(rowSize,B,ibMin+h,jbMin+0,B,ibMin+0,jbMin+0,W,iWMin+0,jWMin+0,h,h);          // B21 - B11 -> W11
+    Strassen(rowSize,h,A,iaMin+h,jaMin+h,W,iWMin+0,jWMin+0,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin+0);    // M4 = A22*W11 -> W22
+    AddMat(rowSize,C,icMin+0,jcMin+0,W,iWMin+h,jWMin+h,C,icMin+0,jcMin+0,h,h);          // C11 += M4 += W22
+    AddMat(rowSize,C,icMin+h,jcMin+0,W,iWMin+h,jWMin+h,C,icMin+h,jcMin+0,h,h);          // C21 += M4 += W22
 
     // M5 = (A11 + A12) B22
-    AddMat(rowSize,A,0,0,A,0,h,W,0,0,h,h);          // A11 + A12 -> W11
-    Strassen(rowSize,h,W,0,0,B,h,h,W,h,h,W,h,0);    // M5 = W11*B22 -> W22
-    SubMat(rowSize,C,0,0,W,h,h,C,0,0,h,h);          // C11 -= M5 -= W22
-    AddMat(rowSize,C,0,h,W,h,h,C,0,h,h,h);          // C12 += M5 += W22
+    AddMat(rowSize,A,iaMin+0,jaMin+0,A,iaMin+0,jaMin+h,W,iWMin+0,jWMin+0,h,h);          // A11 + A12 -> W11
+    Strassen(rowSize,h,W,iWMin+0,jWMin+0,B,ibMin+h,jbMin+h,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin+0);    // M5 = W11*B22 -> W22
+    SubMat(rowSize,C,icMin+0,jcMin+0,W,iWMin+h,jWMin+h,C,icMin+0,jcMin+0,h,h);          // C11 -= M5 -= W22
+    AddMat(rowSize,C,icMin+0,jcMin+h,W,iWMin+h,jWMin+h,C,icMin+0,jcMin+h,h,h);          // C12 += M5 += W22
 
     // M6 = (A21 − A11) (B11 + B12)
-    SubMat(rowSize,A,h,0,A,0,0,W,0,0,h,h);          // A21 - A11 -> W11
-    AddMat(rowSize,B,0,0,B,0,h,W,0,h,h,h);          // B11 + B12 -> W12
-    Strassen(rowSize,h,W,0,0,W,0,h,W,h,h,W,h,0);    // M6 = W11*W12 -> W22
-    AddMat(rowSize,C,h,h,W,h,h,C,h,h,h,h);          // C22 += M6 += W22
+    SubMat(rowSize,A,iaMin+h,jaMin+0,A,iaMin+0,jaMin+0,W,iWMin+0,jWMin+0,h,h);          // A21 - A11 -> W11
+    AddMat(rowSize,B,ibMin+0,jbMin+0,B,ibMin+0,jbMin+h,W,iWMin+0,jWMin+h,h,h);          // B11 + B12 -> W12
+    Strassen(rowSize,h,W,iWMin+0,jWMin+0,W,iWMin+0,jWMin+h,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin+0);    // M6 = W11*W12 -> W22
+    AddMat(rowSize,C,icMin+h,jcMin+h,W,iWMin+h,jWMin+h,C,icMin+h,jcMin+h,h,h);          // C22 += M6 += W22
 
     // M7 = (A12 − A22) (B21 + B22)
-    SubMat(rowSize,A,0,h,A,h,h,W,0,0,h,h);          // A12 - A22 -> W11
-    AddMat(rowSize,B,h,0,B,h,h,W,0,h,h,h);          // B21 + B22 -> W12
-    Strassen(rowSize,h,W,0,0,W,0,h,W,h,h,W,h,0);    // M6 = W11*W12 -> W22
-    AddMat(rowSize,C,0,0,W,h,h,C,0,0,h,h);          // C11 += M7 += W22
+    SubMat(rowSize,A,iaMin+0,jaMin+h,A,iaMin+h,jaMin+h,W,iWMin+0,jWMin+0,h,h);          // A12 - A22 -> W11
+    AddMat(rowSize,B,ibMin+h,jbMin+0,B,ibMin+h,jbMin+h,W,iWMin+0,jWMin+h,h,h);          // B21 + B22 -> W12
+    Strassen(rowSize,h,W,iWMin+0,jWMin+0,W,iWMin+0,jWMin+h,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin+0);    // M6 = W11*W12 -> W22
+    AddMat(rowSize,C,icMin+0,jcMin+0,W,iWMin+h,jWMin+h,C,icMin+0,jcMin+0,h,h);          // C11 += M7 += W22
     
     // C11 = M1 + M4 − M5 + M7
     // C12 = M3 + M5
@@ -150,12 +171,13 @@ int main(void)
     vector<double> A(n*n, 1);
     vector<double> B(n*n, 0);
     vector<double> C(n*n, 0);
+    vector<double> CStr(n*n, 1);
     vector<double> CRef(n*n, 0);
     vector<double> W(n*n, 0);
 
     uint sMS = n/2;
     for (uint i = 0; i < sMS; i++){
-        for (uint j = 0; j < sMS; j++) B[(sMS+j)*n + i] += i;
+        for (uint j = 0; j < sMS; j++) B[(sMS+j)*n + i] += i+1;
     }
 
     
@@ -166,6 +188,23 @@ int main(void)
     printMat(B,n,n);
     cout << "-----C-----" << endl;;
     printMat(C,n,n);
+    cout << "-----Multiplication-----" << endl;
+    cout << "-----A-----" << endl;;
+    printMat(A,n,n);
+    cout << "-----B-----" << endl;;
+    printMat(B,n,n);
+    StdSubMatMult(n,sMS,A,0,0,B,sMS,0,C,sMS,sMS);
+    cout << "-----C-----" << endl;;
+    printMat(C,n,n);
+    cout << endl;
+    cout << "________TEST START______" << endl;
+    StdMatMult(n,n,A,B,CRef);
+    Strassen(n,n,A,0,0,B,0,0,CStr,0,0,W,0,0);
+    cout << "-----CRef-----" << endl;;
+    printMat(CRef,n,n);
+    cout << "-----CStr-----" << endl;;
+    printMat(CStr,n,n);
+
     //StdError = StdMatMult(n,n,A,B,C);
     //StrassenError = Strassen(n,n,A,B,C,W);
     //cout << 'Strassen algorithm terminated due to error: ' << StrassenError << endl;
