@@ -10,7 +10,6 @@
 using namespace std;
 
 // Header: Function declarations
-
 int checkDimensions(vector<double>& A, uint n, uint m);
 int printMat(vector<double> M, uint n, uint m);
 int StdMatMult(uint n, uint m, vector<double>& A, vector<double>& B, vector<double>& C);
@@ -109,9 +108,10 @@ int StdSubMatMult(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMi
 }
 
 int Strassen(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMin, vector<double>& B, uint ibMin, uint jbMin, vector<double>& C, uint icMin, uint jcMin, vector<double>& W, uint iWMin, uint jWMin){
-    if (checkDimensions(A,n,n) + checkDimensions(B,n,n) + checkDimensions(C,n,n) != 0) return 1;
-    if (n == 4) {
-        StdSubMatMult(rowSize,n,A,iaMin,jaMin,B,ibMin,jbMin,C,icMin,jcMin);
+    //if (checkDimensions(A,n,n) + checkDimensions(B,n,n) + checkDimensions(C,n,n) != 0) return 1;
+    if (n == 1) {
+        //StdSubMatMult(rowSize,n,A,iaMin,jaMin,B,ibMin,jbMin,C,icMin,jcMin);
+        C[icMin*rowSize + jcMin] = A[iaMin*rowSize + jaMin] * B[ibMin*rowSize + jbMin];
         return 3;
     }
 
@@ -119,11 +119,12 @@ int Strassen(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMin, ve
     // Go over all indices again... need to consider the offset when nesting
     // should end up looking like the first AddMat()-line for A11+A22
     // M1 = (A11 + A22) (B11 + B22)
-    // A + B = C
     AddMat(rowSize,A,iaMin+0,jaMin+0,A,iaMin+h,jaMin+h,W,iWMin+0,jWMin+0,h,h);          // A11+A22 -> W11
     AddMat(rowSize,B,ibMin+0,jbMin+0,B,ibMin+h,jbMin+h,W,iWMin+0,jWMin+h,h,h);          // B11 + B22 -> W12
     Strassen(rowSize,h,W,iWMin+0,jWMin+0,W,iWMin+0,jWMin+h,C,icMin+0,jcMin+0,W,iWMin+h,jWMin+0);    // C11 = M1 = W11 * W12
-    SetMat(rowSize,C,icMin+0,jcMin+0,C,icMin+h,jcMin+h,h,h);                // C22 = M1 = C11
+    SetMat(rowSize,C,icMin+0,jcMin+0,C,icMin+h,jcMin+h,h,h);                            // C22 = M1 = C11
+    // printMat(C,rowSize,rowSize);
+    // return 0;
 
     // M2 = (A21 + A22) B11
     AddMat(rowSize,A,iaMin+h,jaMin+0,A,iaMin+h,jaMin+h,W,iWMin+0,jWMin+0,h,h);          // A21+A22 -> W11
@@ -181,9 +182,8 @@ int main(void)
 
     uint sMS = n/2;
     for (uint i = 0; i < sMS; i++){
-        for (uint j = 0; j < sMS; j++) B[(sMS+j)*n + i] += i+1;
+        for (uint j = 0; j < sMS; j++) B[(sMS+j)*n + i] += i+1.1;
     }
-
     
     AddMat(n,A,0,0,B,sMS,0,C,sMS,sMS,sMS,sMS);
     cout << "-----A-----" << endl;;
@@ -201,12 +201,13 @@ int main(void)
     cout << "-----C-----" << endl;;
     printMat(C,n,n);
     cout << endl;
-    cout << "________TEST START______" << endl;
+    cout << "_______________TEST START_______________" << endl;
+    cout << "Testing the Strassen algorithm vs standard (naive) Matrix-Matrix-Multiplication" << endl;
     StdMatMult(n,n,A,B,CRef);
     Strassen(n,n,A,0,0,B,0,0,CStr,0,0,W,0,0);
-    cout << "-----CRef-----" << endl;;
+    cout << "-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)" << endl;;
     printMat(CRef,n,n);
-    cout << "-----CStr-----" << endl;;
+    cout << "-----CStr-----(Strassen algorithm)" << endl;;
     printMat(CStr,n,n);
 
     //StdError = StdMatMult(n,n,A,B,C);
