@@ -7,14 +7,16 @@ CXX=g++
 # Linux
 CXXFLAGS= -v -std=c++14 -O1 -Wall -pedantic -march=native -ffast-math #-fopenmp
 # Mac
-#CXXFLAGS= -v -std=c++14 -O3 -Wall -pedantic -march=native -ffast-math -Xpreprocessor -fopenmp -lomp  
+#CXXFLAGS= -v -std=c++14 -O3 -Wall -pedantic -march=native -ffast-math -Xpreprocessor -fopenmp -lomp
+
+SRCS = main.cpp
 
 .DEFAULT_GOAL := all
 
 all: strassen
  
-strassen: main.cpp Makefile
-	$(CXX) main.cpp -o strassen $(CXXFLAGS)
+strassen: $(SRCS) Makefile
+	$(CXX) $(SRCS) -o strassen $(CXXFLAGS)
 
 .PHONY: clean
 clean:
