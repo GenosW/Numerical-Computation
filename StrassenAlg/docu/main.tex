@@ -1,0 +1,160 @@
+\title{Strassen}
+\date{December 2019}
+
+%\documentclass[preview,border=12pt,12pt]{standalone}
+\documentclass[11pt,a4paper]{article}
+%\usepackage{mathtools,comicsans}
+\usepackage[left=2.5cm,right=2cm, bottom=2cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{color}
+\usepackage{abstract}
+\usepackage{mathtools}
+\usepackage{float}
+\usepackage[toc,page]{appendix}
+
+\begin{document}
+\begin{titlepage}
+	\centering
+	\begin{center}
+	\includegraphics[width=6cm]{Bilder/IuE-Logo.png}
+	\end{center}
+	{\scshape\LARGE INSTITUTE OF MICROELECTRONICS\par}
+	\vspace{1cm}
+	{\scshape\Large NSSC - Exercise 3 \par}
+	\vspace{1.5cm}
+	{\huge\bfseries Group 4\par}
+	\vspace{2cm}
+	Member:\par
+	{\Large\itshape Christian \textsc{Gollmann, 01435044}\par}
+	{\Large\itshape Peter \textsc{Holzner, 01426733}\par}
+	\vspace{1.5cm}
+	Submission: \today\par
+	\vfill
+	%supervised by:\par
+	%{\Large\itshape Prof. Dr.~Shuhei \textsc{YOSHIDA}\par}
+	
+
+	\vfill
+
+\end{titlepage}
+\tableofcontents 
+\thispagestyle{empty}
+\newpage
+\setcounter{page}{1}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Checking the correctness of the Strassen algorithm}
+The Strassen Matrix multiplication is a divide and conquer algorithm which means the Matrix multiplication is recursively split up in smaller Matrix multiplications until a size is reached where the multiplication is solved directly.
+\newline
+\newline
+Let the matrices $A$, $B$ and $C$ be of dimension $n=2^m$. Then they can be decomposed into 4 blocks of size $2^{m-1}$
+\newline
+\begin{align}
+    A = \begin{pmatrix} A_{11} & A_{12} \\ A_{21} & A_{22},  \end{pmatrix}, 
+    B = \begin{pmatrix} B_{11} & B_{12} \\ B_{21} & B_{22},  \end{pmatrix}, 
+    C = \begin{pmatrix} C_{11} & C_{12} \\ C_{21} & C_{22},  \end{pmatrix}
+\end{align}
+\newline
+The standard multiplication $AB=C$ then reads as
+\newline
+\begin{align}
+    AB = 
+    \begin{pmatrix} C_{11} & C_{12} \\ C_{21} & C_{22} \end{pmatrix} =
+    \begin{pmatrix} A_{11}B_{11}+A_{12}B_{21} &
+                         A_{11}B_{12}+A_{12}B_{22} \\
+                         A_{21}B_{11}+A_{22}B_{21} &
+                         A_{21}B_{12}+A_{22}B_{22} \end{pmatrix}
+\end{align}
+\newline
+In order to prove the algorithm's correctness, we will calculate the submatrices $C_{11} - C_{22}$ as the Strassen algorithm tells us to and then show that this yields the same result as the standard Matrix multiplication above.
+\newline
+In the next steps we relate to the matrices $M_1 - M_7$ given in the exercise sheet.
+\newline
+\newline
+We start with $C_{11}$
+\newline
+\begin{multline}
+    C_{11} = M_1+M_4-M_5+M_7 =\\
+    [A_{11}B_{11}+A_{22}B_{11}+A_{11}B_{22}+A_{22}B_{22}] +
+    [A_{22}B_{21}-A_{22}B_{11}] -\\
+    [A_{11}B_{22}+A_{12}B_{22}] +
+    [A_{12}B_{21}-A_{22}B_{21}+A_{12}B_{21}-A_{22}B_{22}]
+\end{multline}
+\newline
+One sees that most of the terms cancel out and leave one with the definition of $C_{11}$ derived from the standard multiplication. It is then trivial to show the same thing for the three remaining submatrices of C.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Proving the algorithm's complexity}
+There are actually two ways to derive the Strassen algorithm's complexity. One is to apply the so called Master theorem for recursive algorithms and the other is to resolve the algorithm manually. We will start with the Master theorem.
+\newline
+\subsection{Master Theorem}
+The Master theorem can be applied to recursive algorithms of the form
+\newline
+\begin{align}
+    T(n)=aT(n/b)+f(n)
+\end{align}
+\newline
+So we first have to determine $a$, $b$ and $f(n)$ for our case. For the matrices $M_1$ - $M_7$ the Strassen algorithm relies on $7$ matrix multiplications in which it calls itself recursively. Therefore $a=7$. In those recursive calls, the matrices' dimension has halfed, so $b=2$. In order to assemble the matrices $M_1$-$M_7$ and $C_{11}$-$C_{22}$ we need $18$ additions and substractions with matrices of dimension $\frac{n}{2}$. Therefore
+\newline
+\begin{align} \label{start}
+    T(n) = 7*T\left(\frac{n}{2}\right) + 18\left(\frac{n}{2}\right)^2
+\end{align}
+\newline
+There are three different cases to consider for the master theorem as presented in source. We apply case 1, as
+\newline
+\begin{align}
+    f(n) = \mathcal{O}\left(n^2\right) = \mathcal{O}\left(n^{log_2(7)-\epsilon}\right) \text{ with } \epsilon > 0
+\end{align}
+\newline
+And therefore 
+\newline
+\begin{align}
+    T(n) = \mathcal{O}\left(n^{log_a(b)}\right) = \mathcal{O}\left(n^{log_2(7)}\right) \text{ } \blacksquare
+\end{align}
+\newpage
+\subsection{Resolving the algorithm manually}
+We start by remembering that the to be multiplied matrices' dimensions are of $n=2^m$. As seen in (\ref{start}), there holds
+\newline
+\begin{equation}
+    \begin{split}
+        T(n) & = 7*T\left(\frac{n}{2}\right) + 18\left(\frac{n}{2}\right)^2 \\
+        & = 7*T\left(\frac{n}{2}\right) + \frac{9}{2}n^2 \\
+        & = 7\left(7*T\left(\frac{n}{4}\right)+18\left(\frac{n}{4}\right)^2\right)+\frac{9}{2}n^2 \\
+        & = 7\left(7*T\left(\frac{n}{4}\right)+\frac{9}{2}\left(\frac{n}{2}\right)^2\right)+\frac{9}{2}n^2 \\
+        & = 7 \left( 7 \left( 7*T\left(\frac{n}{8}\right) + \frac{9}{2}\left(\frac{n}{4}\right)^2 \right) + \frac{9}{2}\left(\frac{n}{2}\right)^2 \right)+ \frac{9}{2}n^2\\
+        & = ...\\
+        & = 7^m*T\left(\frac{n}{2^m}\right) + 
+        \frac{9}{2}n^2 
+        \left( 1 + 7\left(\frac{1}{2}\right)^2 +
+        7^2\left(\frac{1}{4}\right)^2 + ... + 
+        7^{m-1}\left(\frac{1}{2^{m-1}}\right)^2
+        \right) \\
+        & = 7^m*T(1) + \frac{9}{2}n^2
+        \sum_{i=0}^{m-1} \left(\frac{7}{4}\right)^i\\
+        & = 7^m*1 + \frac{9}{2}n^2 
+        \left(\frac{1-\left(\frac{7}{4}\right)^m}{1-\frac{7}{4}}\right)\\
+        & = 7^m - 6n^2 \left(1-\left(\frac{7}{4}\right)^m\right)\\
+        & = 7^m - 6n^2 + 7^m*6\frac{n^2}{4^m} \\
+        & = 7^m - 6n^2 + 7^m*6\frac{n^2}{\left(2^m\right)^2} \\
+        & = 7^m - 6n^2 + 7^m*6\frac{n^2}{n^2} \\
+        & = 7^m - 6n^2 + 6*7^m = 7*7^m-6n^2 \\
+        & = 7*\left(2^{log_27}\right)^m - 6n^2 \\
+        & = 7*\left(2^{m}\right)^{log_27}- 6n^2\\
+        & = 7*n^{log_27} - 6n^2 \\
+        & = \mathcal{O} \left(n^{log_27}\right) \blacksquare
+    \end{split} 
+\end{equation}
+
+\end{document}
+ 
