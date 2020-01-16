@@ -40,6 +40,14 @@ def myRQ_with_Shift(A,lmax):
         #     break
     return A, np.array(eigenvalues), iterations
 
+def find_convergence(array):
+    index = 0
+    for n, np in zip(array[:-1],array[1:]):
+        index += 1
+        if abs(n - np) < 1e-15:
+            break
+    return index
+
 if __name__ == "__main__":
 
     scriptpath = os.path.dirname(__file__)
@@ -77,10 +85,17 @@ if __name__ == "__main__":
     
     print('_'*50)
     print('PLOTTING')
-    l_max = 1000
-    for j in [3,5]:
+    l_max = 10000
+    index_RQ = []
+    index_RQ_with_shift = []
+    n_list = []
+    for j,l_max in zip(list(range(2,9)),[100,200,600,2100,7500,30000,60000]):
         n = 2**j
+        l_max = (100*int(np.power(n,1.2)))
+
         print('n= {}'.format(n))
+        print('l_max= {}'.format(l_max))
+        n_list.append(n)
         An = 2*np.eye(n,n,k=0) - np.eye(n,n,k=-1) - np.eye(n,n,k=1)
         
         true_eigenvalues = np.sort(np.linalg.eigvalsh(An))
@@ -98,10 +113,25 @@ if __name__ == "__main__":
         eigenvalues_RQ_with_shift = np.sort(eigenvalues_RQ_with_shift)
         error_RQ_with_shift = np.max(np.abs(eigenvalues_RQ_with_shift - true_eigenvalues),axis=1)
 
-        plt.clf()
-        plt.suptitle('error for n= {}'.format(n))
-        plt.semilogy(np.arange(1,l_max+1), error_RQ, 'r-', label='RQ')
-        plt.semilogy(np.arange(1,np.size(error_RQ_with_shift)+1), error_RQ_with_shift, 'b-', label='RQ with shift')
-        plt.grid()
-        plt.legend()
-        plt.savefig(os.path.join(scriptpath,"Ex12_4c_n={}.png".format(n)))
+        index_RQ.append(find_convergence(error_RQ))
+        index_RQ_with_shift.append(find_convergence(error_RQ_with_shift))
+        print(index_RQ[-1])
+        print(index_RQ_with_shift[-1])
+
+
+        if j == 3 or j == 5:
+            plt.clf()
+            plt.suptitle('error for n= {}'.format(n))
+            plt.semilogy(np.arange(1,l_max+1), error_RQ, 'r-', label='RQ')
+            plt.semilogy(np.arange(1,np.size(error_RQ_with_shift)+1), error_RQ_with_shift, 'b-', label='RQ with shift')
+            plt.grid()
+            plt.legend()
+            plt.savefig(os.path.join(scriptpath,"Ex12_4c_n={}.png".format(n)))
+
+    plt.clf()
+    plt.suptitle('number of QR-steps')
+    plt.loglog(n_list, index_RQ, 'rx-', label='RQ')
+    plt.loglog(n_list, index_RQ_with_shift, 'bx-', label='RQ with shift')
+    plt.grid()
+    plt.legend()
+    plt.savefig(os.path.join(scriptpath,"Ex12_4d.png"))
