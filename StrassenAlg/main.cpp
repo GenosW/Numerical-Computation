@@ -5,7 +5,7 @@ int main(void)//int argc, char *argv[])
 {
     /* Testing the Strassen algorithm vs standard matrix multiplication*/
     cout << "Starting test of Strassen algorithm" << endl << endl;
-    uint n = 1024;
+    uint n = 4096;
     vector<double> A(n*n, 0);
     vector<double> B(n*n, 0);
     vector<double> C(n*n, 0);
@@ -23,22 +23,28 @@ int main(void)//int argc, char *argv[])
     MatRand(B, 1.0, 9.9, seed);
     MatRand(A, 1.0, 9.9, seed+1);
 
-    
-    AddMat(n,A,0,0,B,sMS,0,C,sMS,sMS,sMS,sMS);
     cout << "-----A-----" << endl;;
     printMat(A,n,n);
     cout << "-----B-----" << endl;;
     printMat(B,n,n);
     cout << "-----C-----" << endl;;
     printMat(C,n,n);
-    cout << "-----Multiplication-----" << endl;
-    cout << "-----A-----" << endl;;
-    printMat(A,n,n);
-    cout << "-----B-----" << endl;;
-    printMat(B,n,n);
-    StdSubMatMult(n,sMS,A,0,0,B,sMS,0,C,sMS,sMS);
-    cout << "-----C-----" << endl;;
-    printMat(C,n,n);
+
+    // AddMat(n,A,0,0,B,sMS,0,C,sMS,sMS,sMS,sMS);
+    // cout << "-----A-----" << endl;;
+    // printMat(A,n,n);
+    // cout << "-----B-----" << endl;;
+    // printMat(B,n,n);
+    // cout << "-----C-----" << endl;;
+    // printMat(C,n,n);
+    // cout << "-----Multiplication-----" << endl;
+    // cout << "-----A-----" << endl;;
+    // printMat(A,n,n);
+    // cout << "-----B-----" << endl;;
+    // printMat(B,n,n);
+    // StdSubMatMult(n,sMS,A,0,0,B,sMS,0,C,sMS,sMS);
+    // cout << "-----C-----" << endl;;
+    // printMat(C,n,n);
     cout << endl;
     cout << "_______________TEST START_______________" << endl;
     cout << "Testing the Strassen algorithm vs standard (naive) Matrix-Matrix-Multiplication" << endl << endl;
