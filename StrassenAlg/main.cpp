@@ -1,11 +1,11 @@
 #include "strassen.hpp"
 #include <ctime>
 
-int main(void)
+int main(void)//int argc, char *argv[])
 {
     /* Testing the Strassen algorithm vs standard matrix multiplication*/
     cout << "Starting test of Strassen algorithm" << endl << endl;
-    uint n = 2048;
+    uint n = 1024;
     vector<double> A(n*n, 0);
     vector<double> B(n*n, 0);
     vector<double> C(n*n, 0);
@@ -45,15 +45,16 @@ int main(void)
     clock_t startN = clock();
     StdMatMult(n,n,A,B,CRef);
     clock_t endN = clock();
+    uint strassen_min_size = pow(2,4);
     clock_t startS = clock();
-    Strassen(n,n,A,0,0,B,0,0,CStr,0,0,W,0,0);
+    Strassen(n,n,A,0,0,B,0,0,CStr,0,0,W,0,0,strassen_min_size);
     clock_t endS = clock();
     cout << "-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)" << endl;
     printMat(CRef,n,n);
     cout << endl << "Standard took " << difftime(endN,startN)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl << endl;
     cout << "-----CStr-----(Strassen algorithm)";
     printMat(CStr,n,n);
-    cout << endl << "Stassen took " << difftime(endS,startS)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl;
+    cout << endl << "Strassen (min_size=" << strassen_min_size << ") took " << difftime(endS,startS)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl;
 
     //StdError = StdMatMult(n,n,A,B,C);
     //StrassenError = Strassen(n,n,A,B,C,W);
