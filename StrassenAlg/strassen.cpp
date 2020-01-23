@@ -96,7 +96,6 @@ int StdMatMult(uint n, uint m, vector<double>& A, vector<double>& B, vector<doub
 }
 
 int StdSubMatMult(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMin, vector<double>& B, uint ibMin, uint jbMin, vector<double>& C, uint icMin, uint jcMin){
-    //if (checkDimensions(A,n,m) + checkDimensions(B,n,m) + checkDimensions(C,n,m) != 0) return 1;
     for (uint i = 0; i < n; i++)
         {
             for (uint k = 0; k < n; k++)
@@ -104,21 +103,17 @@ int StdSubMatMult(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMi
                 double sum = 0;
                 for (uint j = 0; j < n; j++)
                 {
-                    sum += A.at((i+iaMin)*rowSize + (j+jaMin)) * B.at((j+ibMin)*rowSize + (k+jbMin));
-                    // cout << "k= " << j << "-> A[k]= " << A.at((i+iaMin)*rowSize + (j+jaMin)) << endl;
-                    // cout << "k= " << j << "-> B[k]= " << B.at((j+ibMin)*rowSize + (k+jbMin)) << endl;
+                    sum += A[(i+iaMin)*rowSize + (j+jaMin)] * B[(j+ibMin)*rowSize + (k+jbMin)];
                 }
-                // cout << "(i,j) = (" << i << "," << k << ")" << endl;
-                // cout << "sum = " << sum << endl;
                 C[(i+icMin)*rowSize + (k+jcMin)] = sum;
             }
         }
 	return 0;
 }
 
-int Strassen(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMin, vector<double>& B, uint ibMin, uint jbMin, vector<double>& C, uint icMin, uint jcMin, vector<double>& W, uint iWMin, uint jWMin, uint min_size){
-    //if (checkDimensions(A,n,n) + checkDimensions(B,n,n) + checkDimensions(C,n,n) != 0) return 1;
-    if (n == min_size) {
+int StrassenR(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMin, vector<double>& B, uint ibMin, uint jbMin, vector<double>& C, uint icMin, uint jcMin, vector<double>& W, uint iWMin, uint jWMin, uint min_size){
+    // Matrices of size (min_size)x(min_size) will be processed using the standard naive matrix-matrix multiplication
+    if (n <= min_size) {
         if (min_size==1){
             C[icMin*rowSize + jcMin] = A[iaMin*rowSize + jaMin] * B[ibMin*rowSize + jbMin];
             return 3;  
@@ -134,49 +129,53 @@ int Strassen(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMin, ve
     // M1 = (A11 + A22) (B11 + B22)
     AddMat(rowSize,A,iaMin,jaMin,A,iaMin+h,jaMin+h,W,iWMin,jWMin,h,h);          // A11+A22 -> W11
     AddMat(rowSize,B,ibMin,jbMin,B,ibMin+h,jbMin+h,W,iWMin,jWMin+h,h,h);          // B11 + B22 -> W12
-    Strassen(rowSize,h,W,iWMin,jWMin,W,iWMin,jWMin+h,C,icMin,jcMin,W,iWMin+h,jWMin,min_size);    // C11 = M1 = W11 * W12
+    StrassenR(rowSize,h,W,iWMin,jWMin,W,iWMin,jWMin+h,C,icMin,jcMin,W,iWMin+h,jWMin,min_size);    // C11 = M1 = W11 * W12
     SetMat(rowSize,C,icMin,jcMin,C,icMin+h,jcMin+h,h,h);                            // C22 = M1 = C11
-    // printMat(C,rowSize,rowSize);
-    // return 0;
 
     // M2 = (A21 + A22) B11
     AddMat(rowSize,A,iaMin+h,jaMin,A,iaMin+h,jaMin+h,W,iWMin,jWMin,h,h);          // A21+A22 -> W11
-    Strassen(rowSize,h,W,iWMin,jWMin,B,ibMin,jbMin,C,icMin+h,jcMin,W,iWMin+h,jWMin,min_size);    // C21 = M2 = W11 * B11
+    StrassenR(rowSize,h,W,iWMin,jWMin,B,ibMin,jbMin,C,icMin+h,jcMin,W,iWMin+h,jWMin,min_size);    // C21 = M2 = W11 * B11
     SubMat(rowSize,C,icMin+h,jcMin+h,C,icMin+h,jcMin,C,icMin+h,jcMin+h,h,h);          // C22 -= M2 -= C21
 
     // M3 = A11 (B12 − B22)
     SubMat(rowSize,B,ibMin,jbMin+h,B,ibMin+h,jbMin+h,W,iWMin,jWMin,h,h);          // B12 - B22 -> W11
-    Strassen(rowSize,h,A,iaMin,jaMin,W,iWMin,jWMin,C,icMin,jcMin+h,W,iWMin+h,jWMin,min_size);    // C12 = M3 = A11 * W11
+    StrassenR(rowSize,h,A,iaMin,jaMin,W,iWMin,jWMin,C,icMin,jcMin+h,W,iWMin+h,jWMin,min_size);    // C12 = M3 = A11 * W11
     AddMat(rowSize,C,icMin+h,jcMin+h,C,icMin,jcMin+h,C,icMin+h,jcMin+h,h,h);          // C22 += M3 += C12
 
     // M4 = A22 (B21 − B11)
     SubMat(rowSize,B,ibMin+h,jbMin,B,ibMin,jbMin,W,iWMin,jWMin,h,h);          // B21 - B11 -> W11
-    Strassen(rowSize,h,A,iaMin+h,jaMin+h,W,iWMin,jWMin,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin,min_size);    // M4 = A22*W11 -> W22
+    StrassenR(rowSize,h,A,iaMin+h,jaMin+h,W,iWMin,jWMin,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin,min_size);    // M4 = A22*W11 -> W22
     AddMat(rowSize,C,icMin,jcMin,W,iWMin+h,jWMin+h,C,icMin,jcMin,h,h);          // C11 += M4 += W22
     AddMat(rowSize,C,icMin+h,jcMin,W,iWMin+h,jWMin+h,C,icMin+h,jcMin,h,h);          // C21 += M4 += W22
 
     // M5 = (A11 + A12) B22
     AddMat(rowSize,A,iaMin,jaMin,A,iaMin,jaMin+h,W,iWMin,jWMin,h,h);          // A11 + A12 -> W11
-    Strassen(rowSize,h,W,iWMin,jWMin,B,ibMin+h,jbMin+h,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin,min_size);    // M5 = W11*B22 -> W22
+    StrassenR(rowSize,h,W,iWMin,jWMin,B,ibMin+h,jbMin+h,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin,min_size);    // M5 = W11*B22 -> W22
     SubMat(rowSize,C,icMin,jcMin,W,iWMin+h,jWMin+h,C,icMin,jcMin,h,h);          // C11 -= M5 -= W22
     AddMat(rowSize,C,icMin,jcMin+h,W,iWMin+h,jWMin+h,C,icMin,jcMin+h,h,h);          // C12 += M5 += W22
 
     // M6 = (A21 − A11) (B11 + B12)
     SubMat(rowSize,A,iaMin+h,jaMin,A,iaMin,jaMin,W,iWMin,jWMin,h,h);          // A21 - A11 -> W11
     AddMat(rowSize,B,ibMin,jbMin,B,ibMin,jbMin+h,W,iWMin,jWMin+h,h,h);          // B11 + B12 -> W12
-    Strassen(rowSize,h,W,iWMin,jWMin,W,iWMin,jWMin+h,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin,min_size);    // M6 = W11*W12 -> W22
+    StrassenR(rowSize,h,W,iWMin,jWMin,W,iWMin,jWMin+h,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin,min_size);    // M6 = W11*W12 -> W22
     AddMat(rowSize,C,icMin+h,jcMin+h,W,iWMin+h,jWMin+h,C,icMin+h,jcMin+h,h,h);          // C22 += M6 += W22
 
     // M7 = (A12 − A22) (B21 + B22)
     SubMat(rowSize,A,iaMin,jaMin+h,A,iaMin+h,jaMin+h,W,iWMin,jWMin,h,h);          // A12 - A22 -> W11
     AddMat(rowSize,B,ibMin+h,jbMin,B,ibMin+h,jbMin+h,W,iWMin,jWMin+h,h,h);          // B21 + B22 -> W12
-    Strassen(rowSize,h,W,iWMin,jWMin,W,iWMin,jWMin+h,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin,min_size);    // M6 = W11*W12 -> W22
+    StrassenR(rowSize,h,W,iWMin,jWMin,W,iWMin,jWMin+h,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin,min_size);    // M6 = W11*W12 -> W22
     AddMat(rowSize,C,icMin,jcMin,W,iWMin+h,jWMin+h,C,icMin,jcMin,h,h);          // C11 += M7 += W22
     
+    // End state:
     // C11 = M1 + M4 − M5 + M7
     // C12 = M3 + M5
     // C21 = M2 + M4
     // C22 = M1 − M2 + M3 + M6
 
     return 0;
+}
+
+int Strassen(uint n, uint m, vector<double>& A, vector<double>& B, vector<double>& C, vector<double>& W, uint min_size)
+{
+    return StrassenR(n,n,A,0,0,B,0,0,C,0,0,W,0,0,min_size);
 }

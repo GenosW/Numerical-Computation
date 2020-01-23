@@ -1,34 +1,43 @@
 #include "strassen.hpp"
 #include <ctime>
 
-int main(void)//int argc, char *argv[])
+int main(int argc, char *argv[]) // m is given by command line argument
 {
+    /* INPUT */
+    assert(argc==2+1);
+    string str = argv[1];
+    uint m = stoi(str);
+    str = argv[2];
+    
+    uint strassen_min_size = pow(2,stoi(str));
+
     /* Testing the Strassen algorithm vs standard matrix multiplication*/
-    cout << "Starting test of Strassen algorithm" << endl << endl;
-    uint n = 4096;
+    cout << "Starting test of Strassen algorithm with m= "<< m << endl << endl;
+    uint n = pow(2,m);              // matrix size
     vector<double> A(n*n, 0);
     vector<double> B(n*n, 0);
     vector<double> C(n*n, 0);
-    vector<double> CStr(n*n, 1);
+    vector<double> CStr(n*n, 3);
+    vector<double> CStr2(n*n, 3);
     vector<double> CRef(n*n, 0);
     vector<double> W(n*n, 0);
     
-    uint sMS = n/2;
-/*
+    //uint sMS = n/2;                 // submatrix size
+    /*
     for (uint i = 0; i < sMS; i++){
         for (uint j = 0; j < sMS; j++) B[(sMS+j)*n + i] += i+1.1;
     }*/
     uint seed = 67;
     cout << "Seed for generating the matrices: " << seed << endl << endl;
-    MatRand(B, 1.0, 9.9, seed);
-    MatRand(A, 1.0, 9.9, seed+1);
+    MatRand(B, 0.0, 1.0, seed);
+    MatRand(A, 0.0, 1.0, seed+1);
 
-    cout << "-----A-----" << endl;;
-    printMat(A,n,n);
-    cout << "-----B-----" << endl;;
-    printMat(B,n,n);
-    cout << "-----C-----" << endl;;
-    printMat(C,n,n);
+    // cout << "-----A-----" << endl;;
+    // printMat(A,n,n);
+    // cout << "-----B-----" << endl;;
+    // printMat(B,n,n);
+    // cout << "-----C-----" << endl;;
+    // printMat(C,n,n);
 
     // AddMat(n,A,0,0,B,sMS,0,C,sMS,sMS,sMS,sMS);
     // cout << "-----A-----" << endl;;
@@ -48,19 +57,24 @@ int main(void)//int argc, char *argv[])
     cout << endl;
     cout << "_______________TEST START_______________" << endl;
     cout << "Testing the Strassen algorithm vs standard (naive) Matrix-Matrix-Multiplication" << endl << endl;
+    /* MAIN EXECUTION CODE */
     clock_t startN = clock();
     StdMatMult(n,n,A,B,CRef);
     clock_t endN = clock();
-    uint strassen_min_size = pow(2,4);
     clock_t startS = clock();
-    Strassen(n,n,A,0,0,B,0,0,CStr,0,0,W,0,0,strassen_min_size);
+    Strassen(n,n,A,B,CStr,W,1);
     clock_t endS = clock();
+    clock_t startS2 = clock();
+    Strassen(n,n,A,B,CStr2,W,strassen_min_size);
+    clock_t endS2 = clock();
     cout << "-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)" << endl;
-    printMat(CRef,n,n);
+    /**/
+    //printMat(CRef,n,n);
     cout << endl << "Standard took " << difftime(endN,startN)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl << endl;
     cout << "-----CStr-----(Strassen algorithm)";
-    printMat(CStr,n,n);
-    cout << endl << "Strassen (min_size=" << strassen_min_size << ") took " << difftime(endS,startS)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl;
+    //printMat(CStr,n,n);
+    cout << endl << "Strassen (min_size=" << 1 << ") took " << difftime(endS,startS)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl;
+    cout << endl << "Strassen (min_size=" << strassen_min_size << ") took " << difftime(endS2,startS2)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl;
 
     //StdError = StdMatMult(n,n,A,B,C);
     //StrassenError = Strassen(n,n,A,B,C,W);
