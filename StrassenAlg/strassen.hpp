@@ -96,7 +96,7 @@ int SetMat(uint rowSize, vector<double>& A, uint iaMin, uint jaMin, vector<doubl
  * !!! Change to signature for public use !!!
  */
 int Strassen(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMin,
-vector<double>& B, uint ibMin, uint jbMin, vector<double>& C, uint icMin, uint jcMin, vector<double>& W, uint iWMin, uint jWMin);
+vector<double>& B, uint ibMin, uint jbMin, vector<double>& C, uint icMin, uint jcMin, vector<double>& W, uint iWMin, uint jWMin, uint min_size);
 
 /**
  * Strassen algorithm for matrix-matrix multiplication.
