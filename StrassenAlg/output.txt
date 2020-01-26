@@ -1,0 +1,176 @@
+Starting test of Strassen algorithm with m= 9
+
+Seed for generating the matrices: 67
+
+
+_______________TEST START_______________
+Testing the Strassen algorithm vs standard (naive) Matrix-Matrix-Multiplication
+
+-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)
+
+Standard took 972.092 millisec
+
+
+-----CStr-----(Strassen algorithm)
+Strassen (min_size=1) took 2317.63 millisec
+
+
+Strassen (min_size=8) took 437.709 millisec
+
+
+Strassen (min_size=64) took 371.31 millisec
+
+Starting test of Strassen algorithm with m= 10
+
+Seed for generating the matrices: 67
+
+
+_______________TEST START_______________
+Testing the Strassen algorithm vs standard (naive) Matrix-Matrix-Multiplication
+
+-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)
+
+Standard took 22415.2 millisec
+
+
+-----CStr-----(Strassen algorithm)
+Strassen (min_size=1) took 16688.1 millisec
+
+
+Strassen (min_size=8) took 3142.33 millisec
+
+
+Strassen (min_size=64) took 3192.05 millisec
+
+Starting test of Strassen algorithm with m= 11
+
+Seed for generating the matrices: 67
+
+
+_______________TEST START_______________
+Testing the Strassen algorithm vs standard (naive) Matrix-Matrix-Multiplication
+
+-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)
+
+Standard took 289828 millisec
+
+
+-----CStr-----(Strassen algorithm)
+Strassen (min_size=1) took 116883 millisec
+
+
+Strassen (min_size=8) took 24206.3 millisec
+
+
+Strassen (min_size=64) took 23301.6 millisec
+
+Starting test of Strassen algorithm with m= 6
+
+Seed for generating the matrices: 67
+
+
+_______________TEST START_______________
+Testing the Strassen algorithm vs standard (naive) Matrix-Matrix-Multiplication
+
+-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)
+
+Standard took 2.612 millisec
+
+
+-----CStr-----(Strassen algorithm)
+Strassen (min_size=1) took 10.933 millisec
+
+
+Strassen (min_size=8) took 1.625 millisec
+
+
+Strassen (min_size=16) took 1.112 millisec
+
+Starting test of Strassen algorithm with m= 7
+
+Seed for generating the matrices: 67
+
+
+_______________TEST START_______________
+Testing the Strassen algorithm vs standard (naive) Matrix-Matrix-Multiplication
+
+-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)
+
+Standard took 16.937 millisec
+
+
+-----CStr-----(Strassen algorithm)
+Strassen (min_size=1) took 52.51 millisec
+
+
+Strassen (min_size=8) took 9.091 millisec
+
+
+Strassen (min_size=16) took 6.701 millisec
+
+Starting test of Strassen algorithm with m= 8
+
+Seed for generating the matrices: 67
+
+
+_______________TEST START_______________
+Testing the Strassen algorithm vs standard (naive) Matrix-Matrix-Multiplication
+
+-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)
+
+Standard took 125.058 millisec
+
+
+-----CStr-----(Strassen algorithm)
+Strassen (min_size=1) took 329.601 millisec
+
+
+Strassen (min_size=8) took 60.068 millisec
+
+
+Strassen (min_size=32) took 48.093 millisec
+
+Starting test of Strassen algorithm with m= 9
+
+Seed for generating the matrices: 67
+
+
+_______________TEST START_______________
+Testing the Strassen algorithm vs standard (naive) Matrix-Matrix-Multiplication
+
+-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)
+
+Standard took 970.586 millisec
+
+
+-----CStr-----(Strassen algorithm)
+Strassen (min_size=1) took 2331.7 millisec
+
+
+Strassen (min_size=8) took 437.959 millisec
+
+
+Strassen (min_size=64) took 353.188 millisec
+
+Starting test of Strassen algorithm with m= 12
+
+Seed for generating the matrices: 67
+
+
+_______________TEST START_______________
+Testing the Strassen algorithm vs standard (naive) Matrix-Matrix-Multiplication
+
+-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)
+
+Standard took 1.78601e+06 millisec
+
+
+-----CStr-----(Strassen algorithm)
+Strassen (min_size=1) took 816457 millisec
+
+
+Strassen (min_size=8) took 162604 millisec
+
+
+Strassen (min_size=64) took 152240 millisec
+

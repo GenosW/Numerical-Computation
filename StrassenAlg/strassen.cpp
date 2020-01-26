@@ -163,7 +163,7 @@ int StrassenR(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMin, v
     // M7 = (A12 − A22) (B21 + B22)
     SubMat(rowSize,A,iaMin,jaMin+h,A,iaMin+h,jaMin+h,W,iWMin,jWMin,h,h);          // A12 - A22 -> W11
     AddMat(rowSize,B,ibMin+h,jbMin,B,ibMin+h,jbMin+h,W,iWMin,jWMin+h,h,h);          // B21 + B22 -> W12
-    StrassenR(rowSize,h,W,iWMin,jWMin,W,iWMin,jWMin+h,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin,min_size);    // M6 = W11*W12 -> W22
+    StrassenR(rowSize,h,W,iWMin,jWMin,W,iWMin,jWMin+h,W,iWMin+h,jWMin+h,W,iWMin+h,jWMin,min_size);    // M7 = W11*W12 -> W22
     AddMat(rowSize,C,icMin,jcMin,W,iWMin+h,jWMin+h,C,icMin,jcMin,h,h);          // C11 += M7 += W22
     
     // End state:

@@ -4,12 +4,13 @@
 int main(int argc, char *argv[]) // m is given by command line argument
 {
     /* INPUT */
-    assert(argc==2+1);
+    assert(argc==3+1);
     string str = argv[1];
     uint m = stoi(str);
     str = argv[2];
-    
     uint strassen_min_size = pow(2,stoi(str));
+    str = argv[3];
+    uint strassen_min_size2 = pow(2,stoi(str));
 
     /* Testing the Strassen algorithm vs standard matrix multiplication*/
     cout << "Starting test of Strassen algorithm with m= "<< m << endl << endl;
@@ -67,6 +68,9 @@ int main(int argc, char *argv[]) // m is given by command line argument
     clock_t startS2 = clock();
     Strassen(n,n,A,B,CStr2,W,strassen_min_size);
     clock_t endS2 = clock();
+    clock_t startS3 = clock();
+    Strassen(n,n,A,B,CStr2,W,strassen_min_size2);
+    clock_t endS3 = clock();
     cout << "-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)" << endl;
     /**/
     //printMat(CRef,n,n);
@@ -75,9 +79,6 @@ int main(int argc, char *argv[]) // m is given by command line argument
     //printMat(CStr,n,n);
     cout << endl << "Strassen (min_size=" << 1 << ") took " << difftime(endS,startS)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl;
     cout << endl << "Strassen (min_size=" << strassen_min_size << ") took " << difftime(endS2,startS2)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl;
-
-    //StdError = StdMatMult(n,n,A,B,C);
-    //StrassenError = Strassen(n,n,A,B,C,W);
-    //cout << 'Strassen algorithm terminated due to error: ' << StrassenError << endl;
+    cout << endl << "Strassen (min_size=" << strassen_min_size2 << ") took " << difftime(endS3,startS3)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl;
     return 0;
 }
