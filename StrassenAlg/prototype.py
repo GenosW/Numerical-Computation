@@ -68,51 +68,55 @@ def strassen(n,A,B,C,W):
     W12 = W[0:h,h:n]
     W21 = W[h:n,0:h]
     W22 = W[h:n,h:n]
+    
     ## Compute
     # M1 = (A11 + A22) (B11 + B22)
     W11 = A11 + A22
     W12 = B11 + B22
     strassen(h,W11,W12,W22,W21)
-    np.copyto(C11,W22)
-    np.copyto(C22,W22)
-    #C11 = W22
-    #C22 = W22
+    C11 = W22
+    C22 = W22
+
     # M2 = (A21 + A22) B11
     W11 = A21 + A22
     W12 = B11
     strassen(h,W11,W12,W22,W21)
-    np.copyto(C21,W22)
+    C21 = W22
     C22 -= W22
     
     # M3 = A11 (B12 − B22)
     W11 = A11
     W12 = (B12 - B22)
     strassen(h,W11,W12,W22,W21)
-    np.copyto(C12,W22)
-    # C12 = W22
+    C12 = W22
     C22 += W22
+
     # M4 = A22 (B21 − B11)
     W11 = A22
     W12 = (B21 - B11)
     strassen(h,W11,W12,W22,W21)
     C11 += W22
     C21 += W22
+
     # M5 = (A11 + A12) B22
     W11 = (A11 + A12)
     W12 = B22
     strassen(h,W11,W12,W22,W21)
     C11 -= W22
     C12 += W22
+
     # M6 = (A21 − A11) (B11 + B12)
     W11 = (A21 - A11)
     W12 = (B11 + B12)
     strassen(h,W11,W12,W22,W21)
     C22 += W22
+
     # M7 = (A12 − A22) (B21 + B22)
     W11 = (A12 - A22)
     W12 = (B21 + B22)
     strassen(h,W11,W12,W22,W21)
     C11 += W22
+
     # print("M7 done -> C:\n",C)
     # if True: return 0
     return 0
