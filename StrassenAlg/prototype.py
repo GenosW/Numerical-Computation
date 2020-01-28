@@ -39,7 +39,7 @@ def matMult(A,B,n):
             C[i,j] = sum
     return C
 
-def strassen(n,A,B,C,W):
+def strassen(n,A,B,C,W,min_size):
     if n == 1:
         C[0,0] = A*B
         #print(C)
@@ -68,6 +68,9 @@ def strassen(n,A,B,C,W):
     W12 = W[0:h,h:n]
     W21 = W[h:n,0:h]
     W22 = W[h:n,h:n]
+
+    if (n <= min_size):
+        return A*B
     
     ## Compute
     # M1 = (A11 + A22) (B11 + B22)

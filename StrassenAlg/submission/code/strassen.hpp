@@ -93,12 +93,13 @@ int SetMat(uint rowSize, vector<double>& A, uint iaMin, uint jaMin, vector<doubl
 
 /**
  * Strassen algorithm for matrix-matrix multiplication.
- * Signature used for the recurions -> additioal arguments needed to specify submatrices
+ * !!! Change to signature for public use !!!
  */
 int StrassenR(uint rowSize, uint n, vector<double>& A, uint iaMin, uint jaMin,
 vector<double>& B, uint ibMin, uint jbMin, vector<double>& C, uint icMin, uint jcMin, vector<double>& W, uint iWMin, uint jWMin, uint min_size);
 
 /**
  * Strassen algorithm for matrix-matrix multiplication.
+ * !!! Change to signature for recursion use !!!
  */
 int Strassen(uint n, uint m, vector<double>& A, vector<double>& B, vector<double>& C, vector<double>& W, uint min_size);

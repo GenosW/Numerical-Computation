@@ -1,5 +1,4 @@
 CXX=g++
-
 # Linux
 CXXFLAGS= -v -std=c++14 -O1 -Wall -pedantic #-march=native -ffast-math
 
