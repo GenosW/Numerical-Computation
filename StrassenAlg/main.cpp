@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) // m is given by command line argument
     vector<double> C(n*n, 0);
     vector<double> CStr(n*n, 3);
     vector<double> CStr2(n*n, 3);
+    vector<double> CStr3(n*n, 3);
     vector<double> CRef(n*n, 0);
     vector<double> W(n*n, 0);
     
@@ -69,7 +70,7 @@ int main(int argc, char *argv[]) // m is given by command line argument
     Strassen(n,n,A,B,CStr2,W,strassen_min_size);
     clock_t endS2 = clock();
     clock_t startS3 = clock();
-    Strassen(n,n,A,B,CStr2,W,strassen_min_size2);
+    Strassen(n,n,A,B,CStr3,W,strassen_min_size2);
     clock_t endS3 = clock();
     cout << "-----CRef-----(standard (naive) Matrix-Matrix-Multiplication)" << endl;
     /**/
@@ -80,5 +81,16 @@ int main(int argc, char *argv[]) // m is given by command line argument
     cout << endl << "Strassen (min_size=" << 1 << ") took " << difftime(endS,startS)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl;
     cout << endl << "Strassen (min_size=" << strassen_min_size << ") took " << difftime(endS2,startS2)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl;
     cout << endl << "Strassen (min_size=" << strassen_min_size2 << ") took " << difftime(endS3,startS3)*1000.0/CLOCKS_PER_SEC << " millisec" << endl << endl;
+
+    if (n<20){
+        cout << "-----C-----" << endl;;
+        printMat(C,n,n);
+        cout << "-----CStr-----" << endl;;
+        printMat(CStr,n,n);
+        cout << "-----CStr2-----" << endl;;
+        printMat(CStr2,n,n);
+        cout << "-----CStr3-----" << endl;;
+        printMat(CStr3,n,n);
+    }
     return 0;
 }
