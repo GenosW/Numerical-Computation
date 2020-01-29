@@ -69,8 +69,17 @@ def strassen(n,A,B,C,W,min_size):
     W21 = W[h:n,0:h]
     W22 = W[h:n,h:n]
 
+
+    # scalar multiplication
+    if n == 1:
+        C = A*B
+        return 0
+
+    # multiplication of submatrices 
+    # by standard matrix multiplication
     if (n <= min_size):
-        return A*B
+        StdMatMult(A,B,C)
+        return 0 
     
     ## Compute
     # M1 = (A11 + A22) (B11 + B22)
